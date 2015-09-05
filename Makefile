@@ -12,4 +12,4 @@ boot/stage2:boot/stage2.s
 	
 
 clean:
-	(cd boot;rm *.o stage1)
+	(cd boot;rm *.o stage1 stage2)
