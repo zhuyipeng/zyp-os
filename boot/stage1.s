@@ -18,11 +18,30 @@ reset:
 	movb $0x0,%dl
 	int $0x13
 	jc reset
-	
+#read setup to 0x9000,size 512 bit
+
+	mov $0x9000,%ax
+	mov %ax,%es
+	xor %bx,%bx
+	mov $1,%ax
+	mov %ax,%ds:sectorcount
+	mov $0,%ax
+	mov %ax,%ds:sectors
+	mov $1,%ax
+	mov %ax,%ds:sectorstart
+	call read
+#read system to 0x1000,size 5*512 bit
 	mov $0x1000,%ax
 	mov %ax,%es
 	xor %bx,%bx
-	
+	mov $5,%ax
+	mov %ax,%ds:sectorcount
+	mov $0,%ax
+	mov %ax,%ds:sectors
+	mov $2,%ax
+	mov %ax,%ds:sectorstart
+	call read
+	jmp $0x9000,$0x0
 read:
 	mov %ds:sectors, %ax
 	cmp %ax,%ds:sectorcount
@@ -57,7 +76,8 @@ readsect:
 	mov %ax,%ds:sectorstart
 	jmp read
 readover:
-	jmp $0x1000,$0x200
+	ret
+
 sectors:
 	.word 0
 sectorcount:
