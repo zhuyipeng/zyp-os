@@ -12,4 +12,5 @@ boot/stage2:boot/stage2.s
 	
 
 clean:
+	rm image -f
 	(cd boot;rm *.o stage1 stage2)
