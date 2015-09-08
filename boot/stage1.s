@@ -34,7 +34,7 @@ reset:
 	mov $0x1000,%ax
 	mov %ax,%es
 	xor %bx,%bx
-	mov $5,%ax
+	mov $6,%ax
 	mov %ax,%ds:sectorcount
 	mov $0,%ax
 	mov %ax,%ds:sectors
