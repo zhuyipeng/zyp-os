@@ -34,5 +34,6 @@ $(LIBS):lib/string.c
 clean:
 	rm image system* -f
 	(cd hal;rm *.o -f)
+	(cd kernel;rm *.o -f)
 	(cd boot;rm *.o stage1 stage2 -f)
 	(cd lib;make clean)
