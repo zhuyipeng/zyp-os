@@ -5,7 +5,7 @@ all:boot/stage1 boot/stage2 system
 	dd if=boot/stage2 of=$(IMAGE) seek=512 bs=1 count=512
 	dd if=system of=$(IMAGE) seek=1024 bs=1 count=2560
 boot/stage1:boot/stage1.s system
-	echo -n "SYSSIZE="; ls -l system |grep system|cut -c25-31|tr \n ' '|tr -d [:alpha:]>tmp.s
+#echo -n "SYSSIZE="; ls -l system |grep system|cut -c25-31|tr \n ' '|tr -d [:alpha:]>tmp.s
 	as boot/stage1.s -o boot/stage1.o
 	ld boot/stage1.o -e start --oformat binary -Ttext 0x0 -x -x -o boot/stage1
 
@@ -26,7 +26,7 @@ HALCFLAGS= -nostdinc -Iinclude
 hal/halall.o:$(HALOBJS)
 	ld -r -o hal/halall.o $(HALOBJS)
 
-hal/.c.o:
+$(HALOBJS):
 	gcc $(HALCFLAGS) -c $*.c -o $*.o
 $(LIBS):lib/string.c
 	(cd lib;make)

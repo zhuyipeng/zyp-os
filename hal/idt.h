@@ -19,7 +19,7 @@
 
 typedef void (*I86_IRQ_HANDLER)(void);
 
-struct idt_descriptor {
+typedef struct {
 	uint16_t		baseLo;
 
 	uint16_t		sel;
@@ -30,7 +30,7 @@ struct idt_descriptor {
 
 	uint16_t		baseHi;
 
-};
+}idt_descriptor;
 
 //! returns interrupt descriptor
 extern idt_descriptor* i86_get_ir (uint32_t i);

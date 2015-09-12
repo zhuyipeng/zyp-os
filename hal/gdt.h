@@ -34,14 +34,14 @@
 //! 4k grandularity. default: none
 #define I86_GDT_GRAND_4K			0x80			//10000000
 
-struct gdt_descriptor {
+typedef struct gdt_descriptor {
 	uint16_t		limit;
 	uint16_t		baseLo;
 	uint8_t			baseMid;
 	uint8_t			flags;
 	uint8_t			grand;
 	uint8_t			baseHi;
-}
+}gdt_descriptor;
 
 extern void gdt_set_descriptor(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t grand);
 

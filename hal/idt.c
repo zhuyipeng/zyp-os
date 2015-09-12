@@ -14,7 +14,7 @@ struct idtr {
 	uint32_t		base;	
 };
 
-static struct idt_descriptor	_idt [I86_MAX_INTERRUPTS];
+static idt_descriptor	_idt [I86_MAX_INTERRUPTS];
 
 static struct idtr _idtr;
 
@@ -26,7 +26,7 @@ static void idt_install () {
 //	_asm lidt [_idtr]
 }
 
-static void _cdecl i86_default_handler () {
+static void i86_default_handler () {
 
 
 
@@ -66,13 +66,13 @@ int i86_install_ir (uint32_t i, uint16_t flags, uint16_t sel, I86_IRQ_HANDLER ir
 
 	uint64_t		uiBase = (uint64_t)&(*irq);
 	
-	_idt[i].baseLo		=	uint16_t(uiBase & 0xffff);
+	_idt[i].baseLo		=	(uint16_t)(uiBase & 0xffff);
 
-	_idt[i].baseHi		=	uint16_t((uiBase >> 16) & 0xffff);
+	_idt[i].baseHi		=	(uint16_t)((uiBase >> 16) & 0xffff);
 
 	_idt[i].reserved	=	0;
 
-	_idt[i].flags		=	uint8_t(flags);
+	_idt[i].flags		=	(uint8_t)(flags);
 
 	_idt[i].sel		=	sel;
 
@@ -81,7 +81,7 @@ int i86_install_ir (uint32_t i, uint16_t flags, uint16_t sel, I86_IRQ_HANDLER ir
 
 int i86_idt_initialize (uint16_t codeSel) {
 
-	_idtr.limit = sizeof (struct idt_descriptor) * I86_MAX_INTERRUPTS -1;
+	_idtr.limit = sizeof (idt_descriptor) * I86_MAX_INTERRUPTS -1;
 
 	_idtr.base	= (uint32_t)&_idt[0];
 	memset ((void*)&_idt[0], 0, sizeof (idt_descriptor) * I86_MAX_INTERRUPTS-1);
