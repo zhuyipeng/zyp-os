@@ -19,7 +19,9 @@
 
 typedef void (*I86_IRQ_HANDLER)(void);
 
-typedef struct {
+#pragma pack (1)
+
+struct idt_descriptor{
 	uint16_t		baseLo;
 
 	uint16_t		sel;
@@ -30,10 +32,10 @@ typedef struct {
 
 	uint16_t		baseHi;
 
-}idt_descriptor;
-
+};
+#pragma pack ()
 //! returns interrupt descriptor
-extern idt_descriptor* i86_get_ir (uint32_t i);
+extern struct idt_descriptor* i86_get_ir (uint32_t i);
 //
 //! installs interrupt handler. When INT is fired, it will call this callback
 

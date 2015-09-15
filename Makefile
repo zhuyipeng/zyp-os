@@ -3,7 +3,7 @@ LIBS=lib/lib.a
 all:boot/stage1 boot/stage2 system
 	dd if=boot/stage1 of=$(IMAGE) bs=512
 	dd if=boot/stage2 of=$(IMAGE) seek=512 bs=1 count=512
-	dd if=system of=$(IMAGE) seek=1024 bs=1 count=2560
+	dd if=system of=$(IMAGE) seek=1024 bs=1 count=5120
 boot/stage1:boot/stage1.s system
 #echo -n "SYSSIZE="; ls -l system |grep system|cut -c25-31|tr \n ' '|tr -d [:alpha:]>tmp.s
 	as boot/stage1.s -o boot/stage1.o

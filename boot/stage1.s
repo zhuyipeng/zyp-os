@@ -34,7 +34,7 @@ reset:
 	mov $0x1000,%ax
 	mov %ax,%es
 	xor %bx,%bx
-	mov $6,%ax
+	mov $10,%ax
 	mov %ax,%ds:sectorcount
 	mov $0,%ax
 	mov %ax,%ds:sectors
@@ -81,7 +81,7 @@ readover:
 sectors:
 	.word 0
 sectorcount:
-	.word 6
+	.word 8 
 sectorstart:
 	.word 1
 sector:

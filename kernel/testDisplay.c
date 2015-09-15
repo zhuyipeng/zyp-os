@@ -14,44 +14,26 @@ static unsigned _color=0;
 
 void DebugPutc (unsigned char c) {
 
-
-
 	if (c==0)
-
 		return;
-
 	if (c == '\n'||c=='\r') {	/* start new line */
-
 		_yPos+=2;
-
 		_xPos=_startX;
-
 		return;
-
 	}
 
-
-
 	if (_xPos > 79) {			/* start new line */
-
 		_yPos+=2;
-
 		_xPos=_startX;
-
 		return;
-
 	}
 
 
 
 	/* draw the character */
-
 	unsigned char* p = (unsigned char*)VID_MEMORY + (_xPos++)*2 + _yPos * 80;
-
 	*p++ = c;
-
 	*p =_color;
-
 }
 
 char tbuf[32];
@@ -156,89 +138,40 @@ void DebugClrScr (const unsigned short c) {
 }
 
 void DebugPuts (char* str) {
-
-
-
 	if (!str)
-
 		return;
-
-
 size_t i = 0;
 	for (i=0; i<strlen (str); i++)
-
 		DebugPutc (str[i]);
 
 }
 
 int DebugPrintf (const char* str, ...) {
-
-
-
 	if(!str)
-
 		return 0;
-
-
-
 	va_list		args;
-
 	va_start (args, str);
-
-size_t i = 0;
-
+	size_t i = 0;
 	for (i=0; i<strlen(str);i++) {
-
-
-
 		switch (str[i]) {
-
-
-
 			case '%':
-
-
-
 				switch (str[i+1]) {
-
-
-
 					/*** characters ***/
-
 					case 'c': {
-
 						char c = va_arg (args, char);
-
 						DebugPutc (c);
-
 						i++;		
-
 						break;
-
 					}
-
-
-
 					/*** address of ***/
-
 					case 's': {
-
 						int c = (int) va_arg (args, char);
-
 						char str[32]={0};
-
 						itoa_s (c, 16, str);
-
 						DebugPuts (str);
-
 						i++;		
-
 						break;
-
 					}
-
-
-
 					/*** integers ***/
 
 					case 'd':

@@ -1,27 +1,29 @@
 #include "gdt.h"
 
 #include <string.h>
-
+#include "../kernel/testDisplay.h"
+#pragma pack (1)
 struct gdtr {
 	uint16_t		m_limit;
 	uint32_t		m_base;
 };
+#pragma pack ()
+struct gdt_descriptor	_gdt [MAX_DESCRIPTORS];
 
-static gdt_descriptor	_gdt [MAX_DESCRIPTORS];
+struct gdtr 	_gdtr;
 
-static struct gdtr 	_gdtr;
+void gdt_install ();
 
-static void gdt_install ();
-
-static void gdt_install () {
+void gdt_install () {
 //	_asm lgdt [_gdtr]
+	__asm__ ("lgdt %0"::"m"(_gdtr));
 }
 
 void gdt_set_descriptor(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t grand){
 	if (i > MAX_DESCRIPTORS)
 
 		return;
-	memset ((void*)&_gdt[i], 0, sizeof (gdt_descriptor));
+	memset ((void*)&_gdt[i], 0, sizeof (struct gdt_descriptor));
 
 	_gdt[i].baseLo	= (uint16_t)(base & 0xffff);
 
@@ -38,7 +40,7 @@ void gdt_set_descriptor(uint32_t i, uint64_t base, uint64_t limit, uint8_t acces
 	_gdt[i].grand |= grand & 0xf0;
 }
 
-gdt_descriptor* i86_gdt_get_descriptor (int i) {
+struct gdt_descriptor* i86_gdt_get_descriptor (int i) {
 
 	if (i > MAX_DESCRIPTORS)
 
@@ -48,6 +50,7 @@ gdt_descriptor* i86_gdt_get_descriptor (int i) {
 }
 
 int i86_gdt_initialize () {
+	
 	_gdtr.m_limit = (sizeof (struct gdt_descriptor) * MAX_DESCRIPTORS)-1;
 
 	_gdtr.m_base = (uint32_t)&_gdt[0];

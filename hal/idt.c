@@ -8,27 +8,28 @@
 #ifdef _DEBUG
 #include "..\Kernel\DebugDisplay.h"
 #endif
-
+#pragma pack (1)
 struct idtr {
 	uint16_t		limit;
 	uint32_t		base;	
 };
+#pragma pack ()
 
-static idt_descriptor	_idt [I86_MAX_INTERRUPTS];
+struct idt_descriptor	_idt [I86_MAX_INTERRUPTS];
 
-static struct idtr _idtr;
+struct idtr _idtr;
 
-static void idt_install ();
+void idt_install ();
 
 static void i86_default_handler ();
 
-static void idt_install () {
-//	_asm lidt [_idtr]
+void idt_install () {
+	__asm__("lidt %0"::"m"(_idtr));
 }
 
 static void i86_default_handler () {
 
-
+#define _DEBUG
 
 #ifdef _DEBUG
 
@@ -46,7 +47,7 @@ static void i86_default_handler () {
 
 }
 
-idt_descriptor* i86_get_ir (uint32_t i) {
+struct idt_descriptor* i86_get_ir (uint32_t i) {
 
 	if (i>I86_MAX_INTERRUPTS)
 
@@ -81,12 +82,13 @@ int i86_install_ir (uint32_t i, uint16_t flags, uint16_t sel, I86_IRQ_HANDLER ir
 
 int i86_idt_initialize (uint16_t codeSel) {
 
-	_idtr.limit = sizeof (idt_descriptor) * I86_MAX_INTERRUPTS -1;
+	_idtr.limit = sizeof (struct idt_descriptor) * I86_MAX_INTERRUPTS -1;
 
 	_idtr.base	= (uint32_t)&_idt[0];
-	memset ((void*)&_idt[0], 0, sizeof (idt_descriptor) * I86_MAX_INTERRUPTS-1);
+	memset ((void*)&_idt[0], 0, sizeof (struct idt_descriptor) * I86_MAX_INTERRUPTS-1);
 	int i = 0;
 	for (i=0; i<I86_MAX_INTERRUPTS; i++)
+	//for (i=0; i<4; i++)
 		i86_install_ir (i, I86_IDT_DESC_PRESENT | I86_IDT_DESC_BIT32,
 			codeSel, (I86_IRQ_HANDLER)i86_default_handler);
 	idt_install ();
