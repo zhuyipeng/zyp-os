@@ -88,7 +88,6 @@ int i86_idt_initialize (uint16_t codeSel) {
 	memset ((void*)&_idt[0], 0, sizeof (struct idt_descriptor) * I86_MAX_INTERRUPTS-1);
 	int i = 0;
 	for (i=0; i<I86_MAX_INTERRUPTS; i++)
-	//for (i=0; i<4; i++)
 		i86_install_ir (i, I86_IDT_DESC_PRESENT | I86_IDT_DESC_BIT32,
 			codeSel, (I86_IRQ_HANDLER)i86_default_handler);
 	idt_install ();
