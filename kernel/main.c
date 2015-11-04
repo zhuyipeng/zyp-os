@@ -1,4 +1,5 @@
 #include "testDisplay.h"
+#include <hal.h>
 void main(void){
 	int i=0x12;
 /*
@@ -20,6 +21,11 @@ void main(void){
 */
 	hal_initialize ();
 	//geninterrupt (0x15);
-	__asm__("int $0x10");	
-	while(1);
+	//__asm__("int $0x10");
+	//
+	while(1){
+		DebugGotoXY (0,14);
+		DebugPrintf ("Current tick count: %i", 0);
+		while(1);
+	}
 }

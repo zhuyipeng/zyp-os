@@ -4,11 +4,14 @@
 
 #include "idt.h"
 #include "pic.h"
-
+#include "pit.h"
 int hal_initialize () {
 
 	i86_cpu_initialize ();
-
+	i86_pic_initialize (0x20,0x28);
+	i86_pit_initialize ();
+	i86_pit_start_counter (100,I86_PIT_OCW_COUNTER_0, I86_PIT_OCW_MODE_SQUAREWAVEGEN);
+	enable();
 	return 0;
 
 }
@@ -39,7 +42,7 @@ void sound (unsigned frequency) {
 
 unsigned char inportb (unsigned short portid) {
 	unsigned char _v;
-	__asm__ volatile ("inb %%dx,%%al":"=a" (_v):"d" (port));
+	__asm__ volatile ("inb %%dx,%%al":"=a" (_v):"d" (portid));
 	return _v;		
 }
 
@@ -57,11 +60,15 @@ void disable () {
 }
 
 void setvect (int intno, void (far *vect) ( ) ) {
-		
+	i86_install_ir (intno, I86_IDT_DESC_PRESENT | I86_IDT_DESC_BIT32,
+		0x8, vect);		
 
 }
 
 const char* get_cpu_vender () {
 	
 }
+int get_tick_count () {
 
+	return i86_pit_get_tick_count();
+}
