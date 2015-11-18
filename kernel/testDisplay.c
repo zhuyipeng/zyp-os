@@ -1,41 +1,56 @@
 #include <stdarg.h>
-
+#include <stdint.h>
 #include <string.h>
 
 #include "testDisplay.h"
 
 #define VID_MEMORY	0xB8000
-
+uint16_t *video_memory = (uint16_t *)0xB8000;
 static unsigned int _xPos=0, _yPos=0;
 
 static unsigned _startX=0, _startY=0;
 
-static unsigned _color=0;
-
+uint8_t cursor_x = 0;
+uint8_t cursor_y = 0;
+uint8_t _color=0;
 void DebugPutc (unsigned char c) {
+    
+    uint16_t attribute = _color << 8;
 
-	if (c==0)
-		return;
-	if (c == '\n'||c=='\r') {	/* start new line */
-		_yPos+=2;
-		_xPos=_startX;
-		return;
+    if (c == 0x08 && cursor_x)
+        cursor_x--;
+
+    else if (c == 0x09)
+        cursor_x = (cursor_x+8) & ~(8-1);
+
+    else if (c == '\r')
+        cursor_x = 0;
+
+        else if (c == '\n') {
+        	cursor_x = 0;
+        	cursor_y++;
+		if(cursor_y >= 25){
+			cursor_y = 0;
+		}
+        }
+
+    else if(c >= ' ') {
+
+        uint16_t* location = video_memory + (cursor_y*80 + cursor_x);
+        *location = c | attribute;
+        cursor_x++;
+    }
+
+    if (cursor_x >= 80) {
+
+        cursor_x = 0;
+        cursor_y++;
+	if(cursor_y >= 25){
+		cursor_y = 0;
 	}
+    }
 
-	if (_xPos > 79) {			/* start new line */
-		_yPos+=2;
-		_xPos=_startX;
-		return;
-	}
-
-
-
-	/* draw the character */
-	unsigned char* p = (unsigned char*)VID_MEMORY + (_xPos++)*2 + _yPos * 80;
-	*p++ = c;
-	*p =_color;
 }
-
 char tbuf[32];
 
 char bchars[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
@@ -147,23 +162,22 @@ size_t i = 0;
 }
 
 int DebugPrintf (const char* str, ...) {
+	
 	if(!str)
 		return 0;
 	va_list		args;
+	size_t i;
 	va_start (args, str);
-	size_t i = 0;
 	for (i=0; i<strlen(str);i++) {
 		switch (str[i]) {
 			case '%':
 				switch (str[i+1]) {
-					/*** characters ***/
 					case 'c': {
 						char c = va_arg (args, char);
 						DebugPutc (c);
 						i++;		
 						break;
 					}
-					/*** address of ***/
 					case 's': {
 						int c = (int) va_arg (args, char);
 						char str[32]={0};
@@ -172,7 +186,6 @@ int DebugPrintf (const char* str, ...) {
 						i++;		
 						break;
 					}
-					/*** integers ***/
 
 					case 'd':
 
@@ -194,7 +207,6 @@ int DebugPrintf (const char* str, ...) {
 
 
 
-					/*** display in hex ***/
 
 					case 'X':
 
@@ -241,9 +253,5 @@ int DebugPrintf (const char* str, ...) {
 
 
 	}
-
-
-
 	va_end (args);
-
 }

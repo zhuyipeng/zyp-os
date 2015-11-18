@@ -5,12 +5,16 @@
 #include "idt.h"
 #include "pic.h"
 #include "pit.h"
+#include "console.h"
 int hal_initialize () {
 
 	i86_cpu_initialize ();
 	i86_pic_initialize (0x20,0x28);
 	i86_pit_initialize ();
 	i86_pit_start_counter (100,I86_PIT_OCW_COUNTER_0, I86_PIT_OCW_MODE_SQUAREWAVEGEN);
+	console_initialize ();
+	char *p = "t\r\ns\r\nt-------";
+	console_write(p,12);
 	enable();
 	return 0;
 
@@ -69,6 +73,5 @@ const char* get_cpu_vender () {
 	
 }
 int get_tick_count () {
-
 	return i86_pit_get_tick_count();
 }

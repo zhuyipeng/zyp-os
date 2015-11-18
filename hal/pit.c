@@ -9,7 +9,7 @@
 #define		I86_PIT_REG_COUNTER2		0x42
 #define		I86_PIT_REG_COMMAND			0x43
 
-static volatile uint32_t			_pit_ticks=0;
+uint32_t			_pit_ticks=1000;
 
 static int _pit_bIsInit = 0;
 extern void timer_interrupt();
@@ -45,7 +45,6 @@ uint32_t i86_pit_set_tick_count (uint32_t i) {
 }
 
 uint32_t i86_pit_get_tick_count () {
-	return 0;
 	return _pit_ticks;
 }
 

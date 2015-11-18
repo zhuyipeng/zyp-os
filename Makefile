@@ -21,7 +21,7 @@ kernel/main.o:kernel/main.c
 	gcc kernel/main.c -c -o kernel/main.o -Iinclude
 kernel/testDisplay.o:kernel/testDisplay.c
 	gcc kernel/testDisplay.c -c -o kernel/testDisplay.o -I../include
-HALOBJS = hal/hal.o hal/gdt.o hal/idt.o hal/cpu.o hal/pic.o hal/pit.o
+HALOBJS = hal/hal.o hal/gdt.o hal/idt.o hal/cpu.o hal/pic.o hal/pit.o hal/console.o
 HALCFLAGS= -nostdinc -Iinclude 
 hal/halall.o:$(HALOBJS)
 	ld -r -o hal/halall.o $(HALOBJS)
