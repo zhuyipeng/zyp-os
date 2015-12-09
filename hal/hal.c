@@ -13,8 +13,14 @@ int hal_initialize () {
 	i86_pit_initialize ();
 	i86_pit_start_counter (100,I86_PIT_OCW_COUNTER_0, I86_PIT_OCW_MODE_SQUAREWAVEGEN);
 	console_initialize ();
-	char *p = "t\r\ns\r\nt-------";
-	console_write(p,12);
+    
+   // int i = 206;
+    //while(i--){
+   //    char *p = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+    //    console_write(p,80); 
+   // }
+   // char *p = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+   //     console_write(p,80); 
 	enable();
 	return 0;
 

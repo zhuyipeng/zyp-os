@@ -1,3 +1,4 @@
+#SYSTEM SIZE INSERT HERE $SYSSIZE
 .code16
 .text
 .bss
@@ -18,8 +19,9 @@ reset:
 	movb $0x0,%dl
 	int $0x13
 	jc reset
+    
 #read setup to 0x9000,size 512 bit
-
+read_setup:
 	mov $0x9000,%ax
 	mov %ax,%es
 	xor %bx,%bx
@@ -30,18 +32,31 @@ reset:
 	mov $1,%ax
 	mov %ax,%ds:sectorstart
 	call read
+read_kernel:
 #read system to 0x1000,size 5*512 bit
 	mov $0x1000,%ax
 	mov %ax,%es
 	xor %bx,%bx
-	mov $10,%ax
+#calculate need read sector count
+    mov $SYSSIZE,%ax
+    xor %dx,%dx
+    mov $0x200,%cx
+    div %cx
+    or $0x0,%dx
+    jz 2f
+    add $1,%ax     
+2:  
+#init readsect
 	mov %ax,%ds:sectorcount
 	mov $0,%ax
 	mov %ax,%ds:sectors
+#jump section 1 for stage1
 	mov $2,%ax
 	mov %ax,%ds:sectorstart
 	call read
+#read is over,jump to stage2
 	jmp $0x9000,$0x0
+
 read:
 	mov %ds:sectors, %ax
 	cmp %ax,%ds:sectorcount
@@ -81,7 +96,7 @@ readover:
 sectors:
 	.word 0
 sectorcount:
-	.word 8 
+	.word 0 
 sectorstart:
 	.word 1
 sector:
@@ -103,8 +118,8 @@ printDone:
 
 msg:
 	.byte 13,10
-        .ascii "Loading system ... compiled by zyp!"
-        .byte 13,10,13,10,0
+    .ascii "Loading system ... compiled by zyp!"
+    .byte 13,10,13,10,0
 
 .org 510
 .word 0xAA55

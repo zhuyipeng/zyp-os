@@ -1,5 +1,5 @@
 OBJS=string.o 
-CFLAGS=-Wall -I../include
+CFLAGS=-nostdlib -fno-builtin -nostdinc -Wall -I../include
 CC = gcc
 %.o:%.c
 	$(CC) -c -o $@ $< $(CFLAGS)

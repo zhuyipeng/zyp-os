@@ -21,40 +21,20 @@ struct idtr _idtr;
 
 void idt_install ();
 
-static void i86_default_handler ();
+extern void i86_default_handler ();
 
 void idt_install () {
 	__asm__("lidt %0"::"m"(_idtr));
 }
-
+/*
 static void i86_default_handler () {
-
-#define _DEBUG
-
-#ifdef _DEBUG
-
-	DebugClrScr (0x18);
-
-	DebugGotoXY (0,0);
-
-	DebugSetColor (0x1e);
-
-	DebugPuts ("*** [i86 Hal] i86_default_handler: Unhandled Exception");
-
-#endif
-
-	for(;;);
-
-}
+	//for(;;);
+}*/
 
 struct idt_descriptor* i86_get_ir (uint32_t i) {
-
 	if (i>I86_MAX_INTERRUPTS)
-
 		return 0;
-
 	return &_idt[i];
-
 }
 
 int i86_install_ir (uint32_t i, uint16_t flags, uint16_t sel, I86_IRQ_HANDLER irq) {

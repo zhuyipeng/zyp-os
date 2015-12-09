@@ -22,3 +22,4 @@
 #https://{username}:{password}@github.com
 
 #git config --global credentiall.helper store
+#vim -b with cmd %!xxd

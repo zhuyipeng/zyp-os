@@ -2,22 +2,21 @@
 #include "pit.h"
 #include "pic.h"
 #include <hal.h>
-
+#include "console.h"
 
 #define		I86_PIT_REG_COUNTER0		0x40
 #define		I86_PIT_REG_COUNTER1		0x41
 #define		I86_PIT_REG_COUNTER2		0x42
 #define		I86_PIT_REG_COMMAND			0x43
 
-uint32_t			_pit_ticks=1000;
+uint32_t			_pit_ticks= 0;
 
 static int _pit_bIsInit = 0;
 extern void timer_interrupt();
 void i86_pit_irq ();
-
+static int _pit_bIsInit_test = 0;
 void i86_pit_irq () {
 	//DebugClrScr (0x18);
-
         //DebugGotoXY (0,0);
 
         //DebugSetColor (0x1e);
@@ -35,6 +34,24 @@ void i86_pit_irq () {
 		);
 	*/
 	_pit_ticks++;
+    if(_pit_ticks%10 == 0){
+        if(_pit_bIsInit_test%2 == 0){
+            //char *p = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";;    
+            char *p = "123456\r\n";
+            console_write(p,8); 
+        }else if(_pit_bIsInit_test%3 == 0){
+            //char *p = "hello67890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";;        
+            char *p = "hello\r\n";
+            console_write(p,7); 
+        }else if(_pit_bIsInit_test%7 == 0){
+            //char *p = "test167890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";;        
+            char*p = "test---\r\n";
+            console_write(p,9); 
+        }
+        
+        
+        _pit_bIsInit_test++;
+    }
 }
 
 uint32_t i86_pit_set_tick_count (uint32_t i) {

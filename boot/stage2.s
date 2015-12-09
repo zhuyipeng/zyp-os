@@ -22,26 +22,26 @@ start:
 	mov $0x0f,%ah
 	int $0x10
 	mov %bx,(4)
-        mov %ax,(6)
+    mov %ax,(6)
 	
 #get for EGA/VGA
 	mov $0x12,%ah
-        mov $0x10,%bl
-        int $0x10
-        mov %ax,(8)
-        mov %bx,(10)
-        mov %cx,(12)
+    mov $0x10,%bl
+    int $0x10
+    mov %ax,(8)
+    mov %bx,(10)
+    mov %cx,(12)
 
 #get hd0 data
 
 	mov $0x0000,%ax
-        mov %ax,%ds
-        lds (4*0x41),%si
-        mov $0x9020,%ax
-        mov %ax,%es
-        mov $0x0080,%di
-        mov $0x10,%cx
-        rep movsb
+    mov %ax,%ds
+    lds (4*0x41),%si
+    mov $0x9020,%ax
+    mov %ax,%es
+    mov $0x0080,%di
+    mov $0x10,%cx
+    rep movsb
 #start system move
 	cli
 	xor %ax,%ax
