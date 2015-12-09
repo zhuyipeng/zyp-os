@@ -19,17 +19,18 @@ void main(void){
 
 */
 	hal_initialize ();
-	DebugSetColor (0x19);
+	//DebugSetColor (0x19);
 	//geninterrupt (0x15);
 	//__asm__("int $0x10");
 	//
-	DebugGotoXY (0,14);
-	i = 0;
-	while(1){
+	//DebugGotoXY (0,14);
+	//i = 0;
+	//while(1){
 	/*	if(i%2 == 0){
 			DebugPrintf ("%d\n",i);
 		}else
 			DebugPrintf ("%d\n",i);
 		i++;*/
-	}
+	//}
+    while(1);
 }
