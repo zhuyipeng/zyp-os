@@ -1,4 +1,4 @@
-HALOBJS = hal.o gdt.o idt.o cpu.o pic.o pit.o console.o interrupt.o
+HALOBJS = hal.o gdt.o idt.o cpu.o pic.o pit.o console.o keyboard.o interrupt.o
 CFLAGS = -nostdlib -fno-builtin -nostdinc -I../include
 halall.o:$(HALOBJS)
 	ld -r -o halall.o $(HALOBJS)
@@ -26,6 +26,7 @@ hal.o: hal.c ../include/hal.h ../include/stdint.h cpu.h idt.h pic.h pit.h \
  console.h
 idt.o: idt.c idt.h ../include/stdint.h ../include/string.h \
  ../include/size_t.h ../include/hal.h
+keyboard.o: keyboard.c keyboard.h ../include/stdint.h ../include/hal.h
 pic.o: pic.c ../include/hal.h ../include/stdint.h pic.h
 pit.o: pit.c idt.h ../include/stdint.h pit.h pic.h ../include/hal.h \
  console.h

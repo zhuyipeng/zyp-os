@@ -5,6 +5,6 @@
 void console_initialize(void);
 
 void console_write(unsigned char*p,int32_t size);
-
+void testPutValue(int value,int base);
 
 #endif

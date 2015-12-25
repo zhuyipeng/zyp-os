@@ -35,22 +35,23 @@ void i86_pit_irq () {
 	*/
 	_pit_ticks++;
     if(_pit_ticks%10 == 0){
+        /*
         if(_pit_bIsInit_test%2 == 0){
             //char *p = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";;    
-            char *p = "123456\r\n";
-            console_write(p,8); 
+            char *p = "123456\t123\r\n";
+            console_write(p,strlen(p)); 
         }else if(_pit_bIsInit_test%3 == 0){
             //char *p = "hello67890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";;        
-            char *p = "hello\r\n";
-            console_write(p,7); 
+            char *p = "hello\t123\r\n";
+            console_write(p,strlen(p)); 
         }else if(_pit_bIsInit_test%7 == 0){
             //char *p = "test167890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";;        
-            char*p = "test---\r\n";
-            console_write(p,9); 
+            char*p = "test---\t123\r\n";
+            console_write(p,strlen(p)); 
         }
         
         
-        _pit_bIsInit_test++;
+        _pit_bIsInit_test++;*/
     }
 }
 

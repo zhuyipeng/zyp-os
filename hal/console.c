@@ -59,14 +59,13 @@ static void testPutChar(char *pos,char *a, int size){
         *tmp = a[i];
         *(tmp+1) = 0x07;
     }
-    
 }
 
-static void testPutValue(char *pos, int value,int base){
+void testPutValue(int value,int base){
     char tmp[35];
     memset(tmp,0,35);
     itoa(value,tmp,35,base);
-    testPutChar(pos, tmp, strlen(tmp));
+    testPutChar(0xb8000+100, tmp, strlen(tmp));
 }
 
 static void gotoxy(int32_t tmpX,int32_t tmpY){
@@ -79,7 +78,6 @@ static void gotoxy(int32_t tmpX,int32_t tmpY){
 }
 
 static void init_video_mem(){
-    //outportb(video_port_regs,12);
     unsigned char *display_size = 0x9020a;
     video_mem_start = 0xb8000;
     video_mem_origin = 0xb8000;
@@ -163,6 +161,9 @@ static void scrup(void){
     }
 }
 
+static void scrdown(void){
+    
+}
 
 static void cr(void){
     position -= x*sizeof(short);
@@ -178,7 +179,22 @@ static void lf(void){ //line feed
     scrup();
 }
 
+static void ri(void){
+    if(y > top){
+        y--;
+        position -= screen_column_num*sizeof(short);
+        return;
+    }
+    scrdown();
+}
 
+static void del(void){
+    if(x){
+        x--;
+        position -= 2;
+        *(unsigned short*)position = erase_char;
+    }
+}
 
 void console_initialize(void){
     init_video_mem();
@@ -191,28 +207,60 @@ void console_write(unsigned char*p, int32_t size){
     int i = 0;
     for(i = 0;i < size;i++){
         char c = p[i];
-        if(c == 27) //switch 1
-            state = 1;
-        else if(c == 10 || c == 11 || c ==12){
-            lf();
-        }else if(c == 13){
-            cr();
-        }
-        else if(c > 31 && c < 127){
-            if(x >= screen_column_num){
-                x = 0;
-                position -= screen_column_num*sizeof(short);
-                lf();
-            }
-            char *tmp = position;
-            *tmp = c;
-            *(tmp+1) = 0x07;
-            position += sizeof(short);
-            x++;
-            
+        switch(state){
+            case 0:
+                if(c == 27) //switch 1
+                    state = 1;
+                else if(c == 10 || c == 11 || c ==12){
+                    lf();
+                }else if(c == 13){
+                    cr();
+                }
+                else if(c > 31 && c < 127){
+                    if(x >= screen_column_num){
+                        x = 0;
+                        position -= screen_column_num*sizeof(short);
+                        lf();
+                    }
+                    char *tmp = position;
+                    *tmp = c;
+                    *(tmp+1) = 0x07;
+                    position += sizeof(short);
+                    x++;
+                    
+                }else if(c == 127){//delete one char
+                    del();
+                }else if(c == 8){//backspace
+                    if(x){
+                        x--;
+                        position -= 2;
+                    }
+                }else if(c == 9){
+                    c = 8 - (x&7);
+                    x += c;
+                    position += c<<1;
+                    if(x > screen_column_num){
+                        x -= screen_column_num;
+                        position -= screen_column_num*sizeof(short);
+                        lf();
+                    }
+                }
+                break;
+            case 1:
+                state = 0;
+                if(c == '['){
+                    state = 2;
+                }else if(c == 'E'){
+                    gotoxy(0,y+1);
+                }else if(c == 'M'){
+                    ri();
+                }
+                break;
+            default:
+                break;
         }
     }
     set_cursor();
     //this is for debug
-    testPutValue(position-40*2,(position- video_mem_start)/(2*80),10);
+    //testPutValue(position-40*2,(position- video_mem_start)/(2*80),10);
 }

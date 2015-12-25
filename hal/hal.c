@@ -6,6 +6,7 @@
 #include "pic.h"
 #include "pit.h"
 #include "console.h"
+#include "keyboard.h"
 int hal_initialize () {
 
 	i86_cpu_initialize ();
@@ -13,8 +14,8 @@ int hal_initialize () {
 	i86_pit_initialize ();
 	i86_pit_start_counter (100,I86_PIT_OCW_COUNTER_0, I86_PIT_OCW_MODE_SQUAREWAVEGEN);
 	console_initialize ();
-    
-   // int i = 206;
+    keyboard_initialize();
+    //int i = 206;
     //while(i--){
    //    char *p = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
     //    console_write(p,80); 
