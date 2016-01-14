@@ -1,4 +1,5 @@
 #include "keyboard.h"
+#include "tty.h"
 #include "console.h"
 
 #define wait() \
@@ -29,27 +30,28 @@ static char shift_mode = 0;
 static char ctrl_mode = 0;
 static char alt_mode = 0;
 static char caps_mode = 0;
+static unsigned char keyboard_char_cache[16]={0x0};
+static unsigned char keyboard_char_cache_length = 0;
+
+void copy_to_tty_read_cache(void/*tty driver maybe here*/){
+    //console_write(keyboard_char_cache,keyboard_char_cache_length);
+    tty_table[0].read(&tty_table[0], keyboard_char_cache,keyboard_char_cache_length);
+}
+
 void do_self(unsigned char scan_code){
-    //testPutValue(scan_code,10);
+    keyboard_char_cache_length = 0;
     if(!caps_mode && !shift_mode){
         if(key_map[scan_code]){
-            char p[1];
-            p[0]= key_map[scan_code];
-            console_write(p,1);
+            keyboard_char_cache[0]=key_map[scan_code];
+            keyboard_char_cache_length++;
         }
-    }else if(caps_mode == 1){
+    }else if(caps_mode == 1 || shift_mode == 1){
         if(shift_key_map[scan_code]){
-            char p[1];
-            p[0]= shift_key_map[scan_code];
-            console_write(p,1);
-        }
-    }else if(shift_mode == 1){
-        if(shift_key_map[scan_code]){
-            char p[1];
-            p[0]= shift_key_map[scan_code];
-            console_write(p,1);
+            keyboard_char_cache[0]=shift_key_map[scan_code];
+            keyboard_char_cache_length++;
         }
     }
+    copy_to_tty_read_cache();
 }
 
 static void ctrl(unsigned char scan_code){
@@ -133,19 +135,20 @@ static void reboot(){
 
 }
 
-static unsigned cursor_table[13] ={'H','A','5',' ','D','G','C',0,'Y','B','6','2','3'};
-
+static unsigned char cursor_table[13] ={'H','A'/*up*/,'5',' ','D'/*left*/,'G','C'/*right*/,0,'Y','B'/*down*/,'6','2','3'};
+                                       //{'H', 'Y', 'A', 'B', 'D', 'C', 'V', 'U', 'G', 'S', 'T', '@'};
 static void move_cursor(unsigned char scan_code){
-    unsigned char p = cursor_table[scan_code - 73];
-    unsigned char cmd[4] = {0x};
-    cmd[3] = 0x5b;
-    cmd[3] = 0x1b;
-    cmd[3] = '~';
-    cmd[3] = p;
     
+    unsigned char p = cursor_table[scan_code - 73];
+    keyboard_char_cache[0] = 0x1b;
+    keyboard_char_cache[1] = 0x5b;
+    keyboard_char_cache[2] = p;
+    keyboard_char_cache_length = 3;
+    copy_to_tty_read_cache();
 }
 
 static void cursor(unsigned char scan_code){
+    return;//not suppose open yet
     if(scan_code == 83){
         if(ctrl_mode&&alt_mode){
             reboot();
@@ -230,10 +233,7 @@ void keyboard_initialize(void){
             }else{
                 key_table_map[i] = 0;
             }
-            
         }
-        
-        
     }
 }
 
@@ -291,6 +291,7 @@ void keyboard_table(unsigned char scan_code){
         char *p = "I am a basterd:(\r\n";
         //console_write(p,strlen(p));
     }
+    //ready to copy to tty driver
     
 }
 

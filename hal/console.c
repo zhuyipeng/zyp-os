@@ -1,4 +1,5 @@
 #include "console.h"
+#include "tty.h"
 #include <hal.h>
 #define _DEBUG
 #ifdef _DEBUG
@@ -25,9 +26,6 @@ static int state = 0;
 static int scr_gap = 1;
 static short erase_char = 0x0720;
 
-static void cursor_initalize(void){
-	int a = 0;
-}
 
 static void itoa(long value,char *p,int size,int base){
     
@@ -67,14 +65,21 @@ void testPutValue(int value,int base){
     itoa(value,tmp,35,base);
     testPutChar(0xb8000+100, tmp, strlen(tmp));
 }
+static void testPutInsideValue(int value,int base){
+    char tmp[35];
+    memset(tmp,0,35);
+    itoa(value,tmp,35,base);
+    testPutChar(0xb8000+120, tmp, strlen(tmp));
+}
 
 static void gotoxy(int32_t tmpX,int32_t tmpY){
-	if(x >= screen_column_num || y >= screen_row_num) {
+	if(tmpX >= screen_column_num || tmpY >= screen_row_num) {
         return;
     }
     x = tmpX;
     y = tmpY;
     position = video_mem_origin+ y * screen_column_num * sizeof(short) + x*sizeof(short);
+    testPutInsideValue(y,10);
 }
 
 static void init_video_mem(){
@@ -255,6 +260,10 @@ void console_write(unsigned char*p, int32_t size){
                 }else if(c == 'M'){
                     ri();
                 }
+                break;
+            case 2:
+                
+                state = 0;
                 break;
             default:
                 break;
